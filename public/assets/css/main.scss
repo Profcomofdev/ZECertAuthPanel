@@ -1,0 +1,79 @@
+.uk-flex.uk-flex-center.uk-flex-column {
+    align-items: center;
+}
+
+.uk-navbar-nav {
+    display: none !important;
+}
+
+.uk-navbar-toggle {
+    display: none !important;
+}
+
+.header-login {
+    text-align: center;
+}
+
+.main {
+    padding: 10px 15px;
+}
+
+.ma-width-500{
+    max-width: 500px !important;
+}
+
+.error {
+    padding: 10px 20px;
+    border: 1px solid #ff3939;
+    margin: 10px 0px;
+    color: #ff3939;
+    display: inline-flex;
+}
+
+.success {
+    padding: 10px 20px;
+    border: 1px solid #39ff85;
+    margin: 10px 0px;
+    color: #39ff85;
+    display: inline-flex;
+}
+
+.my-button {
+    border-radius: 0px !important;
+    padding: 20px 0px !important;
+}
+
+.my-button a {
+    color: #fff !important;
+}
+
+.my-button a:hover {
+    color: #fff !important;
+}
+
+table span a{
+    color: #fff !important;
+}
+
+table span a:hover{
+    color: #fff !important;
+}
+
+.main > .uk-flex-wrap-around > .uk-card-body {
+    margin-top: 20px;
+}
+
+
+@media screen and (max-width: 600px) {
+    .main > .uk-flex-wrap-around > .uk-card-body {
+        margin-left: 0px !important;
+    }
+}
+
+.Exists {
+    background: #38b538 !important;
+}
+
+.Nothing {
+    background: #ff3636 !important;
+}
