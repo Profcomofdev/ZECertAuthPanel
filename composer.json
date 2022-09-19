@@ -1,0 +1,11 @@
+{
+    "autoload" : {
+        "psr-4" : {
+            "zengine\\" : "vendor/zengine/core",
+            "app\\" : "app"        
+        }   
+    },
+    "require" : {
+        "jajo/jsondb": "^3.0"
+    }
+}
