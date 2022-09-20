@@ -55,4 +55,4 @@ Renewing certificate deleted the previous certificate and generates a new one in
 ## 8. Exporting certificate
 To export certificate get to The "Export certificate" page.
 There you can export the csr, private key and certificate.
-[!Exported](images/export.png)
+![Exported](images/export.png)
