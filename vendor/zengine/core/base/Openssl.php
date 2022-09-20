@@ -19,7 +19,7 @@ abstract class Openssl{
         }else{
             return [1,'Error executing command!']; 
         }
-    }ema
+    }
 
     public function parseCnf(){
         $myfile = file_get_contents(OPENSSL . '/openssl.cnf');
@@ -72,7 +72,8 @@ abstract class Openssl{
         $csr_path = OPENSSL . '/csr/' . $hostname . '.csr';
         $crt_path = OPENSSL . '/crt/' . $hostname . '.crt';
         $cnf = OPENSSL . '/openssl.cnf';
-        $try = $this->execute('openssl ca -in "' . $csr_path . '"' . ' -out "' . $crt_path . '" --config="' . $cnf . '" --batch && echo Success');
+		file_put_contents(OPENSSL . '/extfile.cnf', 'subjectAltName=DNS:'.$hostname);
+        $try = $this->execute('openssl ca -in "' . $csr_path . '"' . ' -out "' . $crt_path . '" --config="' . $cnf . '" -extfile ' . OPENSSL . '/extfile.cnf --batch && echo Success');
         if ($try[0] == 0){
             $json_db->update( [ 'crt' => $crt_path ] )
             ->from( 'certificates.json' )

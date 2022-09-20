@@ -14,7 +14,8 @@ read -p "Organization Name (eg, company): " ONAME
 read -p "Organizational Unit Name (eg, section): " UNIT
 read -p "Email Address: " EMAIL
 PWD=$(pwd)
-export CC CITY LOCALITY ONAME UNIT EMAIL PWD
+dir=$(pwd)
+export CC CITY LOCALITY ONAME UNIT EMAIL PWD dir
 cat $opensslconf | envsubst > openssl.cnf
 openssl genrsa -out cakey.pem 4096
 openssl req -new -x509 -key cakey.pem -out cacert.pem -days 3650 --config=openssl.cnf
