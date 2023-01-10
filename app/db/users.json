@@ -1,13 +1,1 @@
-[
-    {
-        "username": "root",
-        "password": "63a9f0ea7bb98050796b649e85481845",
-        "role": 1
-    }
-,
-    {
-        "username": "admin",
-        "password": "49f68a5c8493ec2c0bf489821c21fc3b",
-        "role": 0
-    }
-]
+[]

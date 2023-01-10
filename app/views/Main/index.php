@@ -23,6 +23,13 @@ if (isset($session)){
             <button class="uk-button uk-button-default uk-button-large login-btn" name="submit" value="Submitted">Login</button>
         </div>
     </form>
+    <div class="uk-form-select" id="forms-changer" data-uk-form-select>
+        <span></span>
+        <select>
+            <option value="personal">Personal SSL management</option>
+            <option value="website">Website SSL management</option>
+        </select>
+    </div>
 </div>
 <?php
 }

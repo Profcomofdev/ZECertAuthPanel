@@ -3,11 +3,11 @@
     <head>
         <title>ZECertAuthPanel</title>
         <meta charset="UTF-8"/>
-        <link rel="stylesheet" href="/public/assets/css/main.css"/>
+        <link rel="stylesheet" href="/assets/css/main.css"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="/public/assets/css/uikit.min.css" />
-        <script src="/public/assets/js/uikit.min.js"></script>
-        <script src="/public/assets/js/uikit-icons.min.js"></script>
+        <link rel="stylesheet" href="/assets/css/uikit.min.css" />
+        <script src="/assets/js/uikit.min.js"></script>
+        <script src="/assets/js/uikit-icons.min.js"></script>
     </head>
     <body>
         <nav class="uk-navbar-container uk-margin uk-padding-small uk-padding-remove-top uk-padding-remove-bottom" uk-navbar>
@@ -15,7 +15,7 @@
                 <a class="uk-navbar-toggle" href="#">
                     <span uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Menu</span>
                 </a>
-                <a class="uk-navbar-item uk-logo" href="/manage/"><img src="/public/assets/images/logo.svg"/></a>
+                <a class="uk-navbar-item uk-logo" href="/manage/"><img src="/assets/images/logo.svg"/></a>
                 <ul class="uk-navbar-nav">
                     <li>
                         <a href="/manage/certificates">
@@ -38,5 +38,6 @@
         <main id="main" class="main">
             <?=$content;?>
         </main>
+        <script src="/assets/js/main.js"></script>
     </body>
 </html>
