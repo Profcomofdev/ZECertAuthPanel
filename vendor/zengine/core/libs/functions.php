@@ -1,4 +1,5 @@
 <?php
+class_alias('\RedBeanPHP\R', '\R');
 
 function debug($arr){
     echo '<pre>'.print_r($arr, true).'</pre>';
@@ -46,3 +47,15 @@ function getBearerToken() {
     }
     return null;
 }
+
+function catch_fatal()
+    {
+        $err = error_get_last();
+
+        if ($err && $err['type'] === E_ERROR)
+        {  
+            // do something
+        }
+    }
+
+register_shutdown_function('catch_fatal');

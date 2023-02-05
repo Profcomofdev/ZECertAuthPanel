@@ -25,7 +25,7 @@ if (isset($session)){
     </form>
     <div class="uk-form-select" id="forms-changer" data-uk-form-select>
         <span></span>
-        <select>
+        <select class="uk-select" style="margin-top:20px;">
             <option value="personal">Personal SSL management</option>
             <option value="website">Website SSL management</option>
         </select>

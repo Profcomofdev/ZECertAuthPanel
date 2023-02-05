@@ -19,6 +19,13 @@ try{
             localStorage.prefix = 'manage';
         }
     }
+    if (selection.value == 'personal'){
+        document.querySelector('form').setAttribute('action', '/personal/main/auth');
+        localStorage.prefix = 'personal';
+    }else{
+        document.querySelector('form').setAttribute('action', '/manage/main/auth');
+        localStorage.prefix = 'manage';
+    }
 }catch{
     console.log('Error checking form');
 }

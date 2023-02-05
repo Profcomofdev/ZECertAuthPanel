@@ -20,6 +20,10 @@ class ComposerStaticInit7db085da565cfee8d52cd7277ee12593
         array (
             'app\\' => 4,
         ),
+        'R' => 
+        array (
+            'RedBeanPHP\\' => 11,
+        ),
         'J' => 
         array (
             'Jajo\\' => 5,
@@ -34,6 +38,10 @@ class ComposerStaticInit7db085da565cfee8d52cd7277ee12593
         'app\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
+        ),
+        'RedBeanPHP\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/gabordemooij/redbean/RedBeanPHP',
         ),
         'Jajo\\' => 
         array (

@@ -6,6 +6,7 @@ namespace app\controllers\manage;
 use zengine\base\Controller;
 use Jajo\JSONDB;
 use \app\models\MOpenssl;
+use zengine\DbFunctions;
 
 class MainController extends Controller{
 
@@ -23,45 +24,37 @@ class MainController extends Controller{
     }
 
     public function authAction(){
-        $json_db = new JSONDB(APP . '/db');
+        $json_db = new DbFunctions();
         if (!empty($_POST)){
             if ((isset($_POST["username"])) and (isset($_POST["password"]))){
-                $users = $json_db->select( '*' )
-                ->from( 'users.json' )
-                ->get();
-                if (count($users) == 0){
-                    $json_db->insert( 'users.json', 
-                        [ 
+                $users = $json_db->userGetCount();
+                if ($users == 0){
+                    $json_db->usersCreateNew([ 
                             'username' => $_POST["username"], 
                             'password' => md5($_POST["password"]), 
                             'role' => 1 
-                        ]
-                    );
+                        ]);
                     $_SESSION["loggened"] = $_POST;
                     $_SESSION["loggened"]["role"] = 1;
                     header('Location: /manage');
                 }else{
-                    $users = $json_db->select( '*'  )
-                    ->from( 'users.json' )
-                    ->where( [ 'username' => $_POST["username"] ] )
-                    ->get();
-                    if (count($users) > 0){
-                        if (md5($_POST['password']) == $users[0]["password"]){
-                            $_SESSION["loggened"] = $users[0];
+                    $users = $json_db->usersGetInfo($_POST["username"]);
+                    if ($users){
+                        if (md5($_POST['password']) == $users["password"]){
+                            $_SESSION["loggened"] = $users;
                             header('Location: /manage');
                         }else{
                             header('Location: /?error=Auth failed. Wrong username or password.');
                         }
                     }else{
-                        $json_db->insert( 'users.json', 
-                            [ 
-                                'username' => $_POST["username"], 
-                                'password' => md5($_POST["password"]), 
-                                'role' => 0 
-                            ]
-                        );
+                        $json_db->usersCreateNew([ 
+                            'username' => $_POST["username"], 
+                            'password' => md5($_POST["password"]), 
+                            'role' => 0 
+                        ]);
                         $_SESSION["loggened"] = $_POST;
                         $_SESSION["loggened"]["role"] = 0;
+                        header('Location: /manage');
                     }
                 }
             }
@@ -77,14 +70,14 @@ class MainController extends Controller{
                 $get = false;
                 if (isset($_POST["hostname"])){
                     $g = new MOpenssl();
-                    $issueCert = $g->createReq($_POST["hostname"], $_SESSION["loggened"]["username"]);
+                    $issueCert = $g->createReq($_POST["hostname"], $_SESSION["loggened"]["id"]);
                     if ($issueCert[0] == 1){
                         $text = '<div class="error">Error occured in creating certificate!</div><div class="error uk-margin-left">'.$issueCert[1].'</div>';
                         if ($_SESSION["loggened"]["role"] == 1){
                             $database = $g->getAllDatabase();
                             $this->set(compact('database', 'text'));
                         }else{
-                            $database = $g->getAllUDatabase($_SESSION["loggened"]["username"]);
+                            $database = $g->getAllUDatabase($_SESSION["loggened"]["id"]);
                             $this->set(compact('database', 'text'));
                         }
                     }else{
@@ -93,7 +86,7 @@ class MainController extends Controller{
                             $database = $g->getAllDatabase();
                             $this->set(compact('database', 'text'));
                         }else{
-                            $database = $g->getAllUDatabase($_SESSION["loggened"]["username"]);
+                            $database = $g->getAllUDatabase($_SESSION["loggened"]["id"]);
                             $this->set(compact('database', 'text'));
                         }
                     }
@@ -106,7 +99,7 @@ class MainController extends Controller{
                     $database = $g->getAllDatabase();
                     $this->set(compact('database'));
                 }else{
-                    $database = $g->getAllUDatabase($_SESSION["loggened"]["username"]);
+                    $database = $g->getAllUDatabase($_SESSION["loggened"]["id"]);
                     $this->set(compact('database'));
                 }
             }
@@ -122,14 +115,14 @@ class MainController extends Controller{
                 $get = false;
                 if (isset($_GET["id"])){
                     $g = new MOpenssl();
-                    $issueCert = $g->renewCrt($_GET["id"], $_SESSION["loggened"]["username"]);
+                    $issueCert = $g->renewCrt($_GET["id"], $_SESSION["loggened"]["id"]);
                     if ($issueCert[0] == 1){
                         $text = '<div class="error">Error occured in renewing certificate!</div><div class="error uk-margin-left">'.$issueCert[1].'</div>';
                         if ($_SESSION["loggened"]["role"] == 1){
                             $database = $g->getAllDatabase();
                             $this->set(compact('database', 'text'));
                         }else{
-                            $database = $g->getAllUDatabase($_SESSION["loggened"]["username"]);
+                            $database = $g->getAllUDatabase($_SESSION["loggened"]["id"]);
                             $this->set(compact('database', 'text'));
                         }
                     }else{
@@ -138,7 +131,7 @@ class MainController extends Controller{
                             $database = $g->getAllDatabase();
                             $this->set(compact('database', 'text'));
                         }else{
-                            $database = $g->getAllUDatabase($_SESSION["loggened"]["username"]);
+                            $database = $g->getAllUDatabase($_SESSION["loggened"]["id"]);
                             $this->set(compact('database', 'text'));
                         }
                     }
@@ -151,7 +144,7 @@ class MainController extends Controller{
                     $database = $g->getAllDatabase();
                     $this->set(compact('database'));
                 }else{
-                    $database = $g->getAllUDatabase($_SESSION["loggened"]["username"]);
+                    $database = $g->getAllUDatabase($_SESSION["loggened"]["id"]);
                     $this->set(compact('database'));
                 }
             }
@@ -174,7 +167,7 @@ class MainController extends Controller{
                             $database = $g->getAllDatabase();
                             $this->set(compact('database', 'text'));
                         }else{
-                            $database = $g->getAllUDatabase($_SESSION["loggened"]["username"]);
+                            $database = $g->getAllUDatabase($_SESSION["loggened"]["id"]);
                             $this->set(compact('database', 'text'));
                         }
                     }else{
@@ -183,7 +176,7 @@ class MainController extends Controller{
                             $database = $g->getAllDatabase();
                             $this->set(compact('database', 'text'));
                         }else{
-                            $database = $g->getAllUDatabase($_SESSION["loggened"]["username"]);
+                            $database = $g->getAllUDatabase($_SESSION["loggened"]["id"]);
                             $this->set(compact('database', 'text'));
                         }
                     }
@@ -196,7 +189,7 @@ class MainController extends Controller{
                     $database = $g->getAllDatabase();
                     $this->set(compact('database'));
                 }else{
-                    $database = $g->getAllUDatabase($_SESSION["loggened"]["username"]);
+                    $database = $g->getAllUDatabase($_SESSION["loggened"]["id"]);
                     $this->set(compact('database'));
                 }
             }
@@ -219,7 +212,7 @@ class MainController extends Controller{
                             $database = $g->getAllDatabase();
                             $this->set(compact('database', 'text'));
                         }else{
-                            $database = $g->getAllUDatabase($_SESSION["loggened"]["username"]);
+                            $database = $g->getAllUDatabase($_SESSION["loggened"]["id"]);
                             $this->set(compact('database', 'text'));
                         }
                     }else{
@@ -228,7 +221,7 @@ class MainController extends Controller{
                             $database = $g->getAllDatabase();
                             $this->set(compact('database', 'text'));
                         }else{
-                            $database = $g->getAllUDatabase($_SESSION["loggened"]["username"]);
+                            $database = $g->getAllUDatabase($_SESSION["loggened"]["id"]);
                             $this->set(compact('database', 'text'));
                         }
                     }
@@ -241,7 +234,7 @@ class MainController extends Controller{
                     $database = $g->getAllDatabase();
                     $this->set(compact('database'));
                 }else{
-                    $database = $g->getAllUDatabase($_SESSION["loggened"]["username"]);
+                    $database = $g->getAllUDatabase($_SESSION["loggened"]["id"]);
                     $this->set(compact('database'));
                 }
             }
@@ -258,7 +251,7 @@ class MainController extends Controller{
                 $database = $g->getAllDatabase();
                 $this->set(compact('database', 'certf'));
             }else{
-                $database = $g->getAllUDatabase($_SESSION["loggened"]["username"]);
+                $database = $g->getAllUDatabase($_SESSION["loggened"]["id"]);
                 $this->set(compact('database', 'certf'));
             }
         }else{
@@ -266,7 +259,7 @@ class MainController extends Controller{
                 $database = $g->getAllDatabase();
                 $this->set(compact('database'));
             }else{
-                $database = $g->getAllUDatabase($_SESSION["loggened"]["username"]);
+                $database = $g->getAllUDatabase($_SESSION["loggened"]["id"]);
                 $this->set(compact('database'));
             }
         }

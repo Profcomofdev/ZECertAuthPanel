@@ -3,6 +3,7 @@
 namespace zengine\base;
 
 use Jajo\JSONDB;
+use zengine\DbFunctions;
 
 abstract class Openssl{
 
@@ -50,7 +51,7 @@ abstract class Openssl{
     }
 
     public function createReq($hostname, $username, $days='', $type=''){
-        $json_db = new JSONDB(APP . '/db');
+        $json_db = new DbFunctions();
         if (is_file(OPENSSL . '/csr/'.$hostname.'.csr')){
             return [1, 'Cannot create such request, because csr already exists'];
         }else{
@@ -61,15 +62,13 @@ abstract class Openssl{
             if ($key_result[0] == 0){
                 $csr_result = $this->execute('openssl req -new -key ' . $key_path . '  -out ' . $csr_path . ' -subj "/C='.$config["countryName_default"].'/ST='.$config["stateOrProvinceName_default"].'/L='.$config["localityName"].'/O='.$config["0_organizationName_default"].'/OU='.$config["organizationalUnitName_default"].'/CN='.$hostname.'/emailAddress='.EMAIL.'" && echo "Success"');
                 if ($csr_result[0] == 0){
-                    $json_db->insert( 'certificates.json', 
-                        [ 
+                    $json_db->openSSLServercreateNew([ 
                             'hostname' => $hostname, 
                             'csr' => $csr_path, 
                             'key' => $key_path,
                             'crt' => '',
                             'user' => $username,
-                        ]
-                    );
+                        ]);
                     return [0, 'Successfully created certificate request'];
                 }else{
                     return $csr_result;
@@ -81,7 +80,7 @@ abstract class Openssl{
     }
 
     public function createPReq($hostname, $username, $days='', $type=''){
-        $json_db = new JSONDB(APP . '/db');
+        $json_db = new DbFunctions();
         if (is_file(OPENSSLP . '/csr/'.$hostname.'.csr')){
             return [1, 'Cannot create such request, because csr already exists'];
         }else{
@@ -91,8 +90,7 @@ abstract class Openssl{
             $config = $this->parsePCnf();
             $key_and_csr_result = $this->execute('openssl req -new -newkey rsa:4096 -nodes -keyout ' . $key_path . ' -config ' . $openssl_config .' -out ' . $csr_path . ' -subj "/C='.$config["countryName_default"].'/ST='.$config["stateOrProvinceName_default"].'/L='.$config["localityName"].'/O='.$config["0_organizationName_default"].'/OU='.$config["organizationalUnitName_default"].'/CN='.$hostname.'/emailAddress='.EMAIL.'" && echo "Success"');
             if ($key_and_csr_result[0] == 0){
-                $json_db->insert( 'certificates-p.json', 
-                    [ 
+                $json_db->openSSLPersonalcreateNew([ 
                         'hostname' => $hostname, 
                         'csr' => $csr_path, 
                         'key' => $key_path,
@@ -110,7 +108,7 @@ abstract class Openssl{
     }
 
     public function genCrt($hostname){
-        $json_db = new JSONDB(APP . '/db');
+        $json_db = new DbFunctions();
         $key_path = OPENSSL . '/key/' . $hostname . '.key';
         $csr_path = OPENSSL . '/csr/' . $hostname . '.csr';
         $crt_path = OPENSSL . '/crt/' . $hostname . '.crt';
@@ -118,10 +116,7 @@ abstract class Openssl{
 		file_put_contents(OPENSSL . '/extfile.cnf', 'subjectAltName=DNS:'.$hostname);
         $try = $this->execute('openssl ca -in "' . $csr_path . '"' . ' -out "' . $crt_path . '" --config="' . $cnf . '" -extfile ' . OPENSSL . '/extfile.cnf --batch && echo Success');
         if ($try[0] == 0){
-            $json_db->update( [ 'crt' => $crt_path ] )
-            ->from( 'certificates.json' )
-            ->where( [ 'hostname' => $hostname ] )
-            ->trigger();
+            $json_db->openSSLServereditInfo($hostname, [ 'crt' => $crt_path ]);
             return [0, 'Successfully issued certificate'];
         }else{
             return $try;
@@ -129,7 +124,7 @@ abstract class Openssl{
     }
 
     public function genPCrt($hostname){
-        $json_db = new JSONDB(APP . '/db');
+        $json_db = new DbFunctions();
         $key_path = OPENSSLP . '/key/' . $hostname . '.key';
         $csr_path = OPENSSLP . '/csr/' . $hostname . '.csr';
         $crt_path = OPENSSLP . '/crt/' . $hostname . '.crt';
@@ -140,10 +135,7 @@ abstract class Openssl{
         $try = $this->execute('openssl ca -config '. OPENSSLP .'/openssl.cnf -in ' . $csr_path . ' -out ' . $crt_path . ' -batch && echo Success');
         if ($try[0] == 0){
             $tryy = $this->execute('openssl pkcs12 -export -in ' . $crt_path . ' -inkey ' . $key_path . ' -certfile ' . $ca_path .' -out ' . $p12_path .' -passout pass:' . $password . ' && echo "Success"');
-            $json_db->update( [ 'crt' => $crt_path , 'p12' => $p12_path, 'password' => $password] )
-            ->from( 'certificates-p.json' )
-            ->where( [ 'hostname' => $hostname ] )
-            ->trigger();
+            $json_db->openSSLPersonaleditInfo($hostname, [ 'crt' => $crt_path , 'p12' => $p12_path, 'password' => $password] );
             return [0, 'Successfully issued certificate'];
         }else{
             return $try;
@@ -151,16 +143,13 @@ abstract class Openssl{
     }
 
     public function renewCrt($hostname, $username){
-        $json_db = new JSONDB(APP . '/db');
+        $json_db = new DbFunctions();
         $key_path = OPENSSL . '/key/' . $hostname . '.key';
         $csr_path = OPENSSL . '/csr/' . $hostname . '.csr';
         $crt_path = OPENSSL . '/crt/' . $hostname . '.crt';
         $cnf = OPENSSL . '/openssl.cnf';
         $this->removeFromIndex($hostname);
-        $json_db->delete()
-        ->from( 'certificates.json' )
-        ->where( [ 'hostname' => $hostname ] )
-        ->trigger();
+        $json_db->openSSLServerdelete($hostname);
         try{
             unlink($key_path);
         }catch (Exception $ex){
@@ -190,17 +179,14 @@ abstract class Openssl{
     }
 
     public function renewPCrt($hostname, $username){
-        $json_db = new JSONDB(APP . '/db');
+        $json_db = new DbFunctions();
         $key_path = OPENSSLP . '/key/' . $hostname . '.key';
         $csr_path = OPENSSLP . '/csr/' . $hostname . '.csr';
         $crt_path = OPENSSLP . '/crt/' . $hostname . '.crt';
         $p12_path = OPENSSLP . '/exp/' . $hostname . '.p12';
         $cnf = OPENSSLP . '/openssl.cnf';
         $this->removeFromPIndex($hostname);
-        $json_db->delete()
-        ->from( 'certificates-p.json' )
-        ->where( [ 'hostname' => $hostname ] )
-        ->trigger();
+        $json_db->openSSLPersonaldelete($hostname);
         try{
             unlink($key_path);
         }catch (Exception $ex){
@@ -235,16 +221,13 @@ abstract class Openssl{
     }
 
     public function removeHostCertificate($hostname){
-        $json_db = new JSONDB(APP . '/db');
+        $json_db = new DbFunctions();
         $key_path = OPENSSL . '/key/' . $hostname . '.key';
         $csr_path = OPENSSL . '/csr/' . $hostname . '.csr';
         $crt_path = OPENSSL . '/crt/' . $hostname . '.crt';
         $cnf = OPENSSL . '/openssl.cnf';
         $this->removeFromIndex($hostname);
-        $json_db->delete()
-        ->from( 'certificates.json' )
-        ->where( [ 'hostname' => $hostname ] )
-        ->trigger();
+        $json_db->openSSLServerdelete($hostname);
         try{
             unlink($key_path);
         }catch (Exception $ex){
@@ -264,16 +247,13 @@ abstract class Openssl{
     }
 
     public function removeHostPCertificate($hostname){
-        $json_db = new JSONDB(APP . '/db');
+        $json_db = new DbFunctions();
         $key_path = OPENSSLP . '/key/' . $hostname . '.key';
         $csr_path = OPENSSLP . '/csr/' . $hostname . '.csr';
         $crt_path = OPENSSLP . '/crt/' . $hostname . '.crt';
         $cnf = OPENSSLP . '/openssl.cnf';
         $this->removeFromPIndex($hostname);
-        $json_db->delete()
-        ->from( 'certificates-p.json' )
-        ->where( [ 'hostname' => $hostname ] )
-        ->trigger();
+        $json_db->openSSLPersonaldelete($hostname);
         try{
             unlink($key_path);
         }catch (Exception $ex){
@@ -314,6 +294,12 @@ abstract class Openssl{
             }
         }
         file_put_contents($index_path, $new_index);
+        $crt_path = OPENSSLP . '/crt/' . $hostname . '.crt';
+        $openssl_conf = OPENSSLP . '/openssl.cnf';
+        $try = $this->execute('openssl ca -config ' . $openssl_conf . ' -revoke ' . $crt_path);
+        if ($try[0] != 0){
+            echo 'Error creating revoke!';
+        }
     }
 
     public function getPCrtInfo($hostname){
@@ -341,36 +327,26 @@ abstract class Openssl{
     }
 
     public function getAllDatabase(){
-        $json_db = new JSONDB(APP . '/db');
-        $certificates = $json_db->select( '*' )
-        ->from( 'certificates.json' )
-        ->get();
+        $json_db = new DbFunctions();
+        $certificates = $json_db->openSSLServergetAll();
         return $certificates;
     }
 
     public function getAllPDatabase(){
-        $json_db = new JSONDB(APP . '/db');
-        $certificates = $json_db->select( '*' )
-        ->from( 'certificates-p.json' )
-        ->get();
+        $json_db = new DbFunctions();
+        $certificates = $json_db->openSSLPersonalgetAll();
         return $certificates;
     }
 
     public function getAllUDatabase($username){
-        $json_db = new JSONDB(APP . '/db');
-        $certificates = $json_db->select( '*' )
-        ->from( 'certificates.json' )
-        ->where( [ 'user' => $username ] )
-        ->get();
+        $json_db = new DbFunctions();
+        $certificates = $json_db->openSSLServergetAllbyUser($username);
         return $certificates;
     }
 
     public function getAllUPDatabase($username){
-        $json_db = new JSONDB(APP . '/db');
-        $certificates = $json_db->select( '*' )
-        ->from( 'certificates-p.json' )
-        ->where( [ 'user' => $username ] )
-        ->get();
+        $json_db = new DbFunctions();
+        $certificates = $json_db->openSSLPersonalgetAllbyUser($username);
         return $certificates;
     }
 

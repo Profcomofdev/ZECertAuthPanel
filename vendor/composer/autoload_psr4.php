@@ -8,5 +8,6 @@ $baseDir = dirname($vendorDir);
 return array(
     'zengine\\' => array($vendorDir . '/zengine/core'),
     'app\\' => array($baseDir . '/app'),
+    'RedBeanPHP\\' => array($vendorDir . '/gabordemooij/redbean/RedBeanPHP'),
     'Jajo\\' => array($vendorDir . '/jajo/jsondb/src'),
 );

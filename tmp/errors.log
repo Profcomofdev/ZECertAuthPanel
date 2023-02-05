@@ -1,0 +1,50 @@
+[2023-02-04 20:53:05] Error text: Call to protected zengine\DbFunctions::__construct() from scope app\controllers\manage\MainController | Line: 27
+=========================
+[2023-02-04 20:53:27] Error text: Class "R" not found | Line: 14
+=========================
+[2023-02-04 20:53:45] Error text: Class "R" not found | Line: 14
+=========================
+[2023-02-04 20:53:57] Error text: Class "R" not found | Line: 14
+=========================
+[2023-02-04 20:55:24] Error text: Class "zengine\R" not found | Line: 14
+=========================
+[2023-02-04 20:55:50] Error text: Class "R" not found | Line: 14
+=========================
+[2023-02-04 20:56:23] Error text: Class "R" not found | Line: 14
+=========================
+[2023-02-04 20:57:34] Error text: Class "R" not found | Line: 14
+=========================
+[2023-02-04 20:58:44] Error text: Class "R" not found | Line: 14
+=========================
+[2023-02-04 21:01:03] Error text: Class "R" not found | Line: 14
+=========================
+[2023-02-04 21:01:26] Error text: Class "zengine\R" not found | Line: 14
+=========================
+[2023-02-04 21:02:26] Error text: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'role' in 'field list' | Line: 206
+=========================
+[2023-02-04 21:03:00] Error text: SQLSTATE[HY000]: General error: 1364 Field 'uuid' doesn't have a default value | Line: 206
+=========================
+[2023-02-04 21:04:29] Error text: Identifier does not conform to RedBeanPHP security policies. | Line: 841
+=========================
+[2023-02-04 21:09:52] Error text: Invalid type: server_certificates | Line: 78
+=========================
+[2023-02-04 21:17:50] Error text: A database has already been specified for this key. | Line: 415
+=========================
+[2023-02-04 21:19:36] Error text: Class "R" not found | Line: 12
+=========================
+[2023-02-04 21:20:16] Error text: Class "R" not found | Line: 13
+=========================
+[2023-02-04 21:25:29] Error text: Class "R" not found | Line: 14
+=========================
+[2023-02-04 21:27:44] Error text: Invalid type: serverCertificates | Line: 78
+=========================
+[2023-02-04 21:29:59] Error text: SQLSTATE[22007]: Invalid datetime format: 1366 Incorrect integer value: 'root' for column `zecertdb`.`serverc`.`user` at row 1 | Line: 206
+=========================
+[2023-02-04 21:31:18] Error text: SQLSTATE[22007]: Invalid datetime format: 1366 Incorrect integer value: 'root' for column `zecertdb`.`serverc`.`user` at row 1 | Line: 206
+=========================
+[2023-02-04 21:43:08] Error text: Class "app\controllers\personal\DbFunctions" not found | Line: 26
+=========================
+[2023-02-05 07:39:19] Error text: No connection to database! | Line: 20
+=========================
+[2023-02-05 07:50:53] Error text: No connection to database! | Line: 20
+=========================

@@ -6,6 +6,7 @@
         }   
     },
     "require" : {
-        "jajo/jsondb": "^3.0"
+        "jajo/jsondb": "^3.0",
+        "gabordemooij/redbean": "^5.7"
     }
 }
